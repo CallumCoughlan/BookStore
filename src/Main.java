@@ -13,14 +13,49 @@ public class Main {
         String userOption = "";
         String mainCommand = "";
         String subCommand;
+        boolean userExists = false;
 
-        while (!userOption.equalsIgnoreCase("Customer") || !userOption.equalsIgnoreCase("Employee")) {
+        while (!userOption.equalsIgnoreCase("Customer") && !userOption.equalsIgnoreCase("Employee")) {
             ti.userOption();
             userOption = sc.next();
         }
 
         while (!mainCommand.equalsIgnoreCase("Exit")) {
             if (userOption.equalsIgnoreCase("Customer")) {
+                while (userExists == false) {
+                    ti.customerLogin();
+                    mainCommand = sc.next();
+                    if (mainCommand.equalsIgnoreCase("Login")) {
+                        System.out.println("Enter your Username:");
+                        String username = sc.next();
+                        System.out.println("Enter your Password");
+                        String password = sc.next();
+                        Customer currentCustomer = new Customer("", username, password, "", "", "", "");
+                        if (currentCustomer.checkExists(conn)) {
+                            userExists = true;
+                        }
+                    } else if (mainCommand.equalsIgnoreCase("Register")) {
+                        System.out.println("Enter your full name:");
+                        String name = sc.next();
+                        System.out.println("Enter your Username:");
+                        String username = sc.next();
+                        System.out.println("Enter your desired Password:");
+                        String password = sc.next();
+                        System.out.println("Enter your Address:");
+                        String address = sc.next();
+                        System.out.println("Enter your Postal code:");
+                        String postalCode = sc.next();
+                        System.out.println("Enter your Phone number:");
+                        String phoneNumber = sc.next();
+                        System.out.println("Enter your Credit Card number:");
+                        String paymentInfo = sc.next();
+                        Customer newCustomer = new Customer(name, username, password, address, postalCode, paymentInfo, phoneNumber);
+                        newCustomer.addCustomer(conn);
+                        userExists = true;
+                    } else {
+                        ti.invalidLogin();
+                    }
+                }
                 ti.customerMenu();
                 mainCommand = sc.next();
 
@@ -45,12 +80,28 @@ public class Main {
                         ti.displayBooksByGenreTable(conn, genre);
                     }
                 } else if (mainCommand.equalsIgnoreCase("AddBook")) {
+                    System.out.println("Enter the ISBN of the book you would like to add to cart");
+                    String isbn = sc.next();
+                    Cart cart = new Cart();
+                    cart.addToCart(isbn, conn);
+                    System.out.println("The book has been added to cart");
 
                 } else if (mainCommand.equalsIgnoreCase("RemoveBook")) {
+                    System.out.println("Enter the ISBN of the book you would like to remove from cart");
+                    String isbn = sc.next();
+                    Cart cart = new Cart();
+                    cart.removeFromCart(isbn, conn);
+                    System.out.println("The book has been removed from the cart");
+
+                } else if (mainCommand.equalsIgnoreCase("DisplayCart")) {
 
                 } else if (mainCommand.equalsIgnoreCase("Checkout")) {
+                    System.out.println("Enter your credit card number");
+                    String paymentInfo = sc.next();
+                    System.out.println("Enter the desired shipping address");
+                    String address = sc.next();
 
-                } else {
+                } else if (!mainCommand.equalsIgnoreCase("Exit")) {
                     ti.invalidCommand();
                 }
             } else if (userOption.equalsIgnoreCase("Employee")) {
@@ -73,7 +124,7 @@ public class Main {
                     ti.displayCriticalStock(conn);
                 } else if (mainCommand.equalsIgnoreCase("Restock")) {
                     ti.restockText(conn, sc);
-                } else {
+                } else if (!mainCommand.equalsIgnoreCase("Exit")) {
                         ti.invalidCommand();
                 }
             }

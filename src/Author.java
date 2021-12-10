@@ -25,6 +25,7 @@ public class Author {
         String sql = ("DELETE FROM Author WHERE authorID = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, getAuthorID());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

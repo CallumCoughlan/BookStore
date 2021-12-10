@@ -10,12 +10,23 @@ public class TextInterface {
         System.out.println("To login as Customer type \"Customer\", To login as Employee type \"Employee\"");
     }
 
+    public void customerLogin() {
+        System.out.println("Would you like to:" +
+                "\n\"Login\": Allows you to shop" +
+                "\n\"Register\": Lets you register so you can shop");
+    }
+
+    public void invalidLogin() {
+        System.out.println("Would you like to you login detail were invalid");
+    }
+
     public void customerMenu() {
         System.out.println("These are the actions you can preform:" +
                 "\n\"DisplayBooks\": Display all books" +
                 "\n\"SearchBooks\": Display books that match search" +
                 "\n\"AddBook\": Add book to cart" +
                 "\n\"RemoveBook\": Remove book from cart" +
+                "\n\"DisplayCart\": Shows all items in cart" +
                 "\n\"Checkout\": Creates order" +
                 "\n\"Exit\": Ends Program");
     }
@@ -46,7 +57,7 @@ public class TextInterface {
                 "\n\"Exit\": Ends Program");
     }
 
-    public void addBookText(Connection conn, Scanner sc) throws SQLException {
+    public void addBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the book's name");
         String bookName = sc.next();
         System.out.println("Enter the name of the Author");

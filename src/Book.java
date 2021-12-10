@@ -19,9 +19,13 @@ public class Book {
         this.genre = genre;
     }
 
-    public void addBook(Connection conn) throws SQLException {
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate("insert into Book values('" + this.name + "','" + this.numberOfPages + "','" + this.stock + "','" + this.price + "')");
+    public void addBook(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("INSERT INTO Book VALUES('" + this.name + "','" + this.numberOfPages + "','" + this.stock + "','" + this.price + "')");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void removeBook(Connection conn) {
@@ -29,6 +33,7 @@ public class Book {
 
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, getIsbn());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -40,6 +45,7 @@ public class Book {
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, amount);
             pstmt.setString(2, getIsbn());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

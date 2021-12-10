@@ -1,46 +1,49 @@
+import java.sql.*;
 import java.util.ArrayList;
 
 public class Cart {
-    private ArrayList<Book> books;
-    private Customer customer;
+    private String bookISBN;
     private int cost;
 
-    public Cart(Customer customer) {
-        this.customer = customer;
+    public Cart() {
+
     }
 
-    public void addToCart(Book book) {
-        this.books.add(book);
+    public void addToCart(String bookISBN, Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("INSERT INTO Cart values('" + bookISBN + "','" + getRows(conn) + "')");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    public void removeFromCart(Book book) {
-        this.books.remove(book);
+    public void removeFromCart(String bookISBN, Connection conn) {
+        String sql = ("DELETE FROM Cart WHERE isbn = ?");
+
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, bookISBN);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    public void addBook(Book book) {
-        this.books.add(book);
-        this.cost += book.getPrice();
-    }
+    public int getRows(Connection conn) {
+        try {
+            String sql = ("SELECT * FROM Cart");
+            Statement st = conn.createStatement();
+            ResultSet result = st.executeQuery(sql);
+            int rows = 1;
 
-    public void removeBook(Book book) {
-        this.books.remove(book);
-        this.cost -= book.getPrice();
-    }
-
-    public ArrayList<Book> getBooks() {
-        return books;
-    }
-
-    public void setBooks(ArrayList<Book> books) {
-        this.books = books;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+            while (!result.next()) {
+                rows += 1;
+            }
+            return rows;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 1;
     }
 
     public int getCost() {
