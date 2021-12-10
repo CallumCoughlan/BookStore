@@ -7,14 +7,16 @@ public class Book {
     private int numberOfPages;
     private int stock;
     private int price;
+    private String genre;
 
-    public Book(String author, String name, int numberOfPages, int stock, int price, String isbn) {
+    public Book(String author, String name, int numberOfPages, int stock, int price, String isbn, String genre) {
         this.author = author;
         this.name = name;
         this.isbn = isbn;
         this.numberOfPages = numberOfPages;
         this.stock = stock;
         this.price = price;
+        this.genre = genre;
     }
 
     public void addBook(Connection conn) throws SQLException {
@@ -27,6 +29,17 @@ public class Book {
 
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, getIsbn());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void restock(Connection conn, int amount) {
+        String sql = ("UPDATE Book SET stock = ? WHERE isbn = ?");
+
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, amount);
+            pstmt.setString(2, getIsbn());
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -68,15 +81,7 @@ public class Book {
         return price;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
     public String getIsbn() {
         return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
     }
 }

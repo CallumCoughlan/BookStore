@@ -28,6 +28,8 @@ public class TextInterface {
                 "\n\"RemovePublisher\": Remove publisher from database" +
                 "\n\"AddAuthor\": Add author to database" +
                 "\n\"RemoveAuthor\": Remove author from database" +
+                "\n\"CriticalStock\": Shows books where the warehouse has less than 5 copies of them" +
+                "\n\"Restock\": Restocks a book by a specified amount" +
                 "\n\"Exit\": Ends Program");
     }
 
@@ -57,8 +59,10 @@ public class TextInterface {
         int price = sc.nextInt();
         System.out.println("Enter the ISBN of the book");
         String isbn = sc.next();
+        System.out.println("Enter the Genre of the book");
+        String genre = sc.next();
 
-        Book newBook = new Book(authorName, bookName, numberOfPages, stock, price, isbn);
+        Book newBook = new Book(authorName, bookName, numberOfPages, stock, price, isbn, genre);
         newBook.addBook(conn);
 
         System.out.println(bookName + " has been added to store!");
@@ -66,7 +70,7 @@ public class TextInterface {
 
     public void removeBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the ISBN of the book");
-        Book oldBook = new Book("", "", 1, 1, 1, sc.next());
+        Book oldBook = new Book("", "", 0, 0, 0, sc.next(), "");
         oldBook.removeBook(conn);
         System.out.println("The book has been removed");
     }
@@ -112,6 +116,57 @@ public class TextInterface {
 
     public void displayBooksTable(Connection conn) {
         String sql = ("SELECT * FROM Book");
+        buildTable(sql, conn);
+    }
+
+    public void displayCriticalStock(Connection conn) {
+        String sql = ("SELECT name AND stock FROM Book WHERE stock <= 5");
+        buildTable(sql, conn);
+    }
+
+    public void restockText(Connection conn, Scanner sc) {
+        System.out.println("Enter book ISBN");
+        String isbn = sc.next();
+        System.out.println("Enter amount to buy");
+        int amount = sc.nextInt();
+        Book oldBook = new Book("", "", 0, 0, 0, isbn, "");
+        oldBook.restock(conn, amount);
+    }
+
+    public void displayBooksByAuthorTable(Connection conn, String author) {
+        String sql = ("SELECT * FROM Book WHERE author = ?");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, author);
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void displayBooksByISBNTable(Connection conn, String isbn) {
+        String sql = ("SELECT * FROM Book WHERE isbn = ?");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, isbn);
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void displayBooksByGenreTable(Connection conn, String genre) {
+        String sql = ("SELECT * FROM Book WHERE genre = ?");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, genre);
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void buildTable(String sql, Connection conn) {
         try {
             Statement st = conn.createStatement();
             ResultSet result = st.executeQuery(sql);

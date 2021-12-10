@@ -14,23 +14,35 @@ public class Main {
         String mainCommand = "";
         String subCommand;
 
-        while(!userOption.equalsIgnoreCase("Customer") || !userOption.equalsIgnoreCase("Employee")) {
+        while (!userOption.equalsIgnoreCase("Customer") || !userOption.equalsIgnoreCase("Employee")) {
             ti.userOption();
             userOption = sc.next();
         }
 
-        while(!mainCommand.equalsIgnoreCase("Exit")) {
+        while (!mainCommand.equalsIgnoreCase("Exit")) {
             if (userOption.equalsIgnoreCase("Customer")) {
                 ti.customerMenu();
                 mainCommand = sc.next();
 
-                if(mainCommand.equalsIgnoreCase("DisplayBooks")) {
+                if (mainCommand.equalsIgnoreCase("DisplayBooks")) {
                     ti.displayBooksTable(conn);
                 } else if (mainCommand.equalsIgnoreCase("SearchBooks")) {
                     ti.searchBookText();
                     subCommand = sc.next();
                     if(subCommand.equalsIgnoreCase("BookName")) {
 
+                    } else if (subCommand.equalsIgnoreCase("AuthorName")) {
+                        System.out.println("Enter the name of an author");
+                        String author = sc.next();
+                        ti.displayBooksByAuthorTable(conn, author);
+                    } else if (subCommand.equalsIgnoreCase("ISBN")) {
+                        System.out.println("Enter the book's ISBN");
+                        String isbn = sc.next();
+                        ti.displayBooksByISBNTable(conn, isbn);
+                    } else if (subCommand.equalsIgnoreCase("Genre")) {
+                        System.out.println("Enter the Genre of books");
+                        String genre = sc.next();
+                        ti.displayBooksByGenreTable(conn, genre);
                     }
                 } else if (mainCommand.equalsIgnoreCase("AddBook")) {
 
@@ -45,7 +57,7 @@ public class Main {
                 ti.employeeMenu();
                 mainCommand = sc.next();
 
-                if(mainCommand.equalsIgnoreCase("AddBook")) {
+                if (mainCommand.equalsIgnoreCase("AddBook")) {
                     ti.addBookText(conn, sc);
                 } else if (mainCommand.equalsIgnoreCase("RemoveBooks")) {
                     ti.removeBookText(conn, sc);
@@ -57,6 +69,10 @@ public class Main {
                     ti.addAuthorText(conn, sc);
                 } else if (mainCommand.equalsIgnoreCase("RemoveAuthor")) {
                     ti.removeAuthorText(conn, sc);
+                } else if (mainCommand.equalsIgnoreCase("CriticalStock")) {
+                    ti.displayCriticalStock(conn);
+                } else if (mainCommand.equalsIgnoreCase("Restock")) {
+                    ti.restockText(conn, sc);
                 } else {
                         ti.invalidCommand();
                 }
