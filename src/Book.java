@@ -1,17 +1,17 @@
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Book {
-    private Author author;
+    private String author;
     private String name;
+    private String isbn;
     private int numberOfPages;
     private int stock;
     private int price;
 
-    public Book(Author author, String name, int numberOfPages, int stock, int price) {
+    public Book(String author, String name, int numberOfPages, int stock, int price, String isbn) {
         this.author = author;
         this.name = name;
+        this.isbn = isbn;
         this.numberOfPages = numberOfPages;
         this.stock = stock;
         this.price = price;
@@ -22,16 +22,21 @@ public class Book {
         stmt.executeUpdate("insert into Book values('" + this.name + "','" + this.numberOfPages + "','" + this.stock + "','" + this.price + "')");
     }
 
-    public void removeBook(Connection conn) throws SQLException {
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate("delete from Book where values('" + this.name + "','" + this.numberOfPages + "','" + this.stock + "','" + this.price + "')");
+    public void removeBook(Connection conn) {
+        String sql = ("DELETE FROM Book WHERE isbn = ?");
+
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, getIsbn());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    public Author getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(Author author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 
@@ -65,5 +70,13 @@ public class Book {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 }

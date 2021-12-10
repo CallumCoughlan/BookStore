@@ -5,52 +5,62 @@ import java.sql.SQLException;
 import java.util.Scanner;
 import java.sql.Types;
 public class Main {
-    public static void main(String args[]) throws SQLException {
-        connect();
+    public static void main(String[] args) throws SQLException {
+        Connection conn = TryConnection.connect();
 
         TextInterface ti = new TextInterface();
         Scanner sc = new Scanner(System.in);
         String userOption = "";
-        String command = "";
+        String mainCommand = "";
+        String subCommand;
 
         while(!userOption.equalsIgnoreCase("Customer") || !userOption.equalsIgnoreCase("Employee")) {
             ti.userOption();
             userOption = sc.next();
         }
 
-        while(!command.equalsIgnoreCase("Exit")) {
+        while(!mainCommand.equalsIgnoreCase("Exit")) {
             if (userOption.equalsIgnoreCase("Customer")) {
                 ti.customerMenu();
-                command = sc.next();
+                mainCommand = sc.next();
 
-                if(command.equalsIgnoreCase("DisplayBooks")) {
+                if(mainCommand.equalsIgnoreCase("DisplayBooks")) {
+                    ti.displayBooksTable(conn);
+                } else if (mainCommand.equalsIgnoreCase("SearchBooks")) {
+                    ti.searchBookText();
+                    subCommand = sc.next();
+                    if(subCommand.equalsIgnoreCase("BookName")) {
 
-                } else if (command.equalsIgnoreCase("SearchBooks")) {
+                    }
+                } else if (mainCommand.equalsIgnoreCase("AddBook")) {
 
-                } else if (command.equalsIgnoreCase("AddBook")) {
+                } else if (mainCommand.equalsIgnoreCase("RemoveBook")) {
 
-                } else if (command.equalsIgnoreCase("RemoveBook")) {
-
-                } else if (command.equalsIgnoreCase("Checkout")) {
+                } else if (mainCommand.equalsIgnoreCase("Checkout")) {
 
                 } else {
                     ti.invalidCommand();
                 }
             } else if (userOption.equalsIgnoreCase("Employee")) {
                 ti.employeeMenu();
+                mainCommand = sc.next();
+
+                if(mainCommand.equalsIgnoreCase("AddBook")) {
+                    ti.addBookText(conn, sc);
+                } else if (mainCommand.equalsIgnoreCase("RemoveBooks")) {
+                    ti.removeBookText(conn, sc);
+                } else if (mainCommand.equalsIgnoreCase("AddPublisher")) {
+                    ti.addPublisherText(conn, sc);
+                } else if (mainCommand.equalsIgnoreCase("RemoverPublisher")) {
+                    ti.removePublisherText(conn, sc);
+                } else if (mainCommand.equalsIgnoreCase("AddAuthor")) {
+                    ti.addAuthorText(conn, sc);
+                } else if (mainCommand.equalsIgnoreCase("RemoveAuthor")) {
+                    ti.removeAuthorText(conn, sc);
+                } else {
+                        ti.invalidCommand();
+                }
             }
         }
-    }
-
-    public static Connection connect() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:5432/Bookstore", "postgres", "MacDuff7476!");
-            System.out.println("Connected to the PostgreSQL server successfully.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return conn;
     }
 }
