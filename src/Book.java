@@ -1,7 +1,7 @@
 import java.sql.*;
 
 public class Book {
-    private String author;
+    private int authorID;
     private String name;
     private String isbn;
     private int numberOfPages;
@@ -10,9 +10,11 @@ public class Book {
     private int price;
     private int bookRoyalty;
     private String genre;
+    private String email;
+    private int cartID;
 
-    public Book(String author, String name, int numberOfPages, int stock, int price, String isbn, String genre, int threshold, int bookRoyalty) {
-        this.author = author;
+    public Book(int authorID, String name, int numberOfPages, int stock, int price, String isbn, String genre, int threshold, int bookRoyalty, String email) {
+        this.authorID = authorID;
         this.name = name;
         this.isbn = isbn;
         this.numberOfPages = numberOfPages;
@@ -21,12 +23,13 @@ public class Book {
         this.genre = genre;
         this.threshold = threshold;
         this.bookRoyalty = bookRoyalty;
+        this.email = email;
     }
 
     public void addBook(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO Book VALUES('" + this.name + "','" + this.numberOfPages + "','" + this.stock + "','" + this.price + "')");
+            stmt.executeUpdate("INSERT INTO Book VALUES('" + this.name + "','" + this.authorID + "','" + this.isbn + "','"+ this.numberOfPages + "','" + this.stock + "','" + this.threshold + "','" + this.price + "','" + this.genre + "','" + this.bookRoyalty + "','" + this.email + "')");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -55,12 +58,12 @@ public class Book {
         }
     }
 
-    public String getAuthor() {
-        return author;
+    public int getAuthorID() {
+        return authorID;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthorID(int authorID) {
+        this.authorID = authorID;
     }
 
     public String getName() {

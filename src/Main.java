@@ -30,7 +30,7 @@ public class Main {
                         String username = sc.next();
                         System.out.println("Enter your Password");
                         String password = sc.next();
-                        Customer currentCustomer = new Customer("", username, password, "", "", "", "");
+                        Customer currentCustomer = new Customer("", username, password, "", "", "");
                         if (currentCustomer.checkExists(conn)) {
                             userExists = true;
                         }
@@ -49,7 +49,7 @@ public class Main {
                         String phoneNumber = sc.next();
                         System.out.println("Enter your Credit Card number:");
                         String paymentInfo = sc.next();
-                        Customer newCustomer = new Customer(name, username, password, address, postalCode, paymentInfo, phoneNumber);
+                        Customer newCustomer = new Customer(name, username, password, address, postalCode, paymentInfo);
                         newCustomer.addCustomer(conn);
                         userExists = true;
                     } else {

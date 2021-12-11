@@ -5,7 +5,9 @@ import java.sql.Statement;
 
 public class BookOrder {
     private String address;
+    private String shippingAddress;
     private String paymentInfo;
+    private int trackingNumber;
 
     public BookOrder (String address, String paymentInfo) {
         this.address = address;

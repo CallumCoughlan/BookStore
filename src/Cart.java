@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 public class Cart {
     public int cartID;
+    private String isbn;
 
     public Cart() {
 

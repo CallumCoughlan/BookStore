@@ -31,6 +31,10 @@ public class TextInterface {
                 "\n\"Exit\": Ends Program");
     }
 
+    public void employeeLogin() {
+        System.out.println("PLease login:");
+    }
+
     public void employeeMenu() {
         System.out.println("These are the actions you can preform:" +
                 "\n\"AddBook\": Add book to catalog" +
@@ -41,6 +45,7 @@ public class TextInterface {
                 "\n\"RemoveAuthor\": Remove author from database" +
                 "\n\"CriticalStock\": Shows books where the warehouse has less than 5 copies of them" +
                 "\n\"Restock\": Restocks a book by a specified amount" +
+                "\n\"ViewSales\": Shows options as to how to view the total store sales" +
                 "\n\"Exit\": Ends Program");
     }
 
@@ -60,8 +65,8 @@ public class TextInterface {
     public void addBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the book's name");
         String bookName = sc.next();
-        System.out.println("Enter the name of the Author");
-        String authorName = sc.next();
+        System.out.println("Enter the Author's ID");
+        int authorID = sc.nextInt();
         System.out.println("Enter the number of pages");
         int numberOfPages = sc.nextInt();
         System.out.println("Enter the initial amount of stock");
@@ -76,8 +81,10 @@ public class TextInterface {
         int threshold = sc.nextInt();
         System.out.println("Enter the royalty the publisher gets");
         int bookRoyalty = sc.nextInt();
+        System.out.println("Enter the email of the publisher");
+        String email = sc.next();
 
-        Book newBook = new Book(authorName, bookName, numberOfPages, stock, price, isbn, genre, threshold, bookRoyalty);
+        Book newBook = new Book(authorID, bookName, numberOfPages, stock, price, isbn, genre, threshold, bookRoyalty, email);
         newBook.addBook(conn);
 
         System.out.println(bookName + " has been added to store!");
@@ -85,7 +92,7 @@ public class TextInterface {
 
     public void removeBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the ISBN of the book");
-        Book oldBook = new Book("", "", 0, 0, 0, sc.next(), "", 0, 0);
+        Book oldBook = new Book(0, "", 0, 0, 0, sc.next(), "", 0, 0, "");
         oldBook.removeBook(conn);
         System.out.println("The book has been removed");
     }
@@ -144,12 +151,12 @@ public class TextInterface {
         String isbn = sc.next();
         System.out.println("Enter amount to buy");
         int amount = sc.nextInt();
-        Book oldBook = new Book("", "", 0, 0, 0, isbn, "", 0, 0);
+        Book oldBook = new Book(0, "", 0, 0, 0, isbn, "", 0, 0, "");
         oldBook.restock(conn, amount);
     }
 
     public void displayBooksByAuthorTable(Connection conn, String author) {
-        String sql = ("SELECT * FROM Book WHERE author = ?");
+        String sql = ("SELECT * FROM Book WHERE authorID = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, author);
             String newSql = pstmt.toString();
