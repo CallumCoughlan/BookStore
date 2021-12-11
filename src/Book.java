@@ -5,11 +5,13 @@ public class Book {
     private String name;
     private String isbn;
     private int numberOfPages;
+    private int threshold;
     private int stock;
     private int price;
+    private int bookRoyalty;
     private String genre;
 
-    public Book(String author, String name, int numberOfPages, int stock, int price, String isbn, String genre) {
+    public Book(String author, String name, int numberOfPages, int stock, int price, String isbn, String genre, int threshold, int bookRoyalty) {
         this.author = author;
         this.name = name;
         this.isbn = isbn;
@@ -17,6 +19,8 @@ public class Book {
         this.stock = stock;
         this.price = price;
         this.genre = genre;
+        this.threshold = threshold;
+        this.bookRoyalty = bookRoyalty;
     }
 
     public void addBook(Connection conn) {

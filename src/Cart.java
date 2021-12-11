@@ -2,8 +2,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class Cart {
-    private String bookISBN;
-    private int cost;
+    public int cartID;
 
     public Cart() {
 
@@ -29,6 +28,15 @@ public class Cart {
         }
     }
 
+    public void clearCart(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("DELETE FROM Cart");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public int getRows(Connection conn) {
         try {
             String sql = ("SELECT * FROM Cart");
@@ -46,11 +54,8 @@ public class Cart {
         return 1;
     }
 
-    public int getCost() {
-        return cost;
-    }
-
-    public void setCost(int cost) {
-        this.cost = cost;
+    public int generateCartID(Connection conn) {
+        String sql = ("SELECT * FROM Cart");
+        return 0;
     }
 }

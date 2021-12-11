@@ -22,7 +22,7 @@ public class Main {
 
         while (!mainCommand.equalsIgnoreCase("Exit")) {
             if (userOption.equalsIgnoreCase("Customer")) {
-                while (userExists == false) {
+                while (!userExists) {
                     ti.customerLogin();
                     mainCommand = sc.next();
                     if (mainCommand.equalsIgnoreCase("Login")) {
@@ -94,12 +94,24 @@ public class Main {
                     System.out.println("The book has been removed from the cart");
 
                 } else if (mainCommand.equalsIgnoreCase("DisplayCart")) {
+                    ti.displayCart(conn);
 
                 } else if (mainCommand.equalsIgnoreCase("Checkout")) {
                     System.out.println("Enter your credit card number");
                     String paymentInfo = sc.next();
                     System.out.println("Enter the desired shipping address");
                     String address = sc.next();
+                    BookOrder newOrder = new BookOrder(address, paymentInfo);
+                    newOrder.makeOrder(conn);
+                    System.out.println("Your order has been placed");
+
+                } else if (mainCommand.equalsIgnoreCase("DisplayAllOrders")) {
+                    ti.getAllOrders(conn);
+
+                } else if (mainCommand.equalsIgnoreCase("DisplayAnOrdersInfo")) {
+                    System.out.println("Enter your order number");
+                    int number = sc.nextInt();
+                    ti.getOrder(number);
 
                 } else if (!mainCommand.equalsIgnoreCase("Exit")) {
                     ti.invalidCommand();

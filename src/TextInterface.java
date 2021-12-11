@@ -72,8 +72,12 @@ public class TextInterface {
         String isbn = sc.next();
         System.out.println("Enter the Genre of the book");
         String genre = sc.next();
+        System.out.println("Enter the number of remaining books to restock at");
+        int threshold = sc.nextInt();
+        System.out.println("Enter the royalty the publisher gets");
+        int bookRoyalty = sc.nextInt();
 
-        Book newBook = new Book(authorName, bookName, numberOfPages, stock, price, isbn, genre);
+        Book newBook = new Book(authorName, bookName, numberOfPages, stock, price, isbn, genre, threshold, bookRoyalty);
         newBook.addBook(conn);
 
         System.out.println(bookName + " has been added to store!");
@@ -81,7 +85,7 @@ public class TextInterface {
 
     public void removeBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the ISBN of the book");
-        Book oldBook = new Book("", "", 0, 0, 0, sc.next(), "");
+        Book oldBook = new Book("", "", 0, 0, 0, sc.next(), "", 0, 0);
         oldBook.removeBook(conn);
         System.out.println("The book has been removed");
     }
@@ -140,7 +144,7 @@ public class TextInterface {
         String isbn = sc.next();
         System.out.println("Enter amount to buy");
         int amount = sc.nextInt();
-        Book oldBook = new Book("", "", 0, 0, 0, isbn, "");
+        Book oldBook = new Book("", "", 0, 0, 0, isbn, "", 0, 0);
         oldBook.restock(conn, amount);
     }
 
@@ -175,6 +179,25 @@ public class TextInterface {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public void displayCart(Connection conn) {
+        String sql = ("SELECT Book.name, Book.author, Book.isbn, Book.stock, Book.price, Book.genre FROM Book INNER JOIN Cart ON Book.isbn = Cart.isbn");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void getAllOrders(Connection conn) {
+        String sql = ("SELECT * FROM BookOrder");
+        buildTable(sql, conn);
+    }
+
+    public void getOrder(int number) {
+
     }
 
     public void buildTable(String sql, Connection conn) {
