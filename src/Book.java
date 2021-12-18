@@ -29,7 +29,7 @@ public class Book {
     public void addBook(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO Book VALUES('" + this.name + "','" + this.authorID + "','" + this.isbn + "','"+ this.numberOfPages + "','" + this.stock + "','" + this.threshold + "','" + this.price + "','" + this.genre + "','" + this.bookRoyalty + "','" + this.email + "')");
+            stmt.executeUpdate("INSERT INTO Book VALUES('" + this.name + "','" + this.numberOfPages + "','" + this.stock + "','"+ this.threshold + "','" + this.isbn + "','" + this.price + "','" + this.genre + "','" + this.bookRoyalty + "','" + this.authorID + "','" + this.email + "')");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

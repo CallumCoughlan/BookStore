@@ -18,14 +18,18 @@ public class Customer {
         this.paymentInfo = paymentInfo;
     }
 
-    public void addCustomer(Connection conn) throws SQLException {
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate("INSERT INTO Customer values('" + this.customerName + "','" + this.userName + "','" + this.password + "','" + this.address + "','" + "','" + this.postalCode + "','" + this.paymentInfo + "')");
+    public void addCustomer(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("INSERT INTO Customer values('" + this.customerName + "','" + this.userName + "','" + this.password + "','" + this.address + "','" + this.postalCode + "','" + this.paymentInfo + "')");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public boolean checkExists(Connection conn) {
         try {
-            String sql = ("SELECT * FROM Customer WHERE username = " + this.userName + " AND password = " + this.password);
+            String sql = ("SELECT * FROM Customer WHERE username = '" + this.userName + "' AND password = '" + this.password + "'");
             Statement st = conn.createStatement();
             ResultSet result = st.executeQuery(sql);
 

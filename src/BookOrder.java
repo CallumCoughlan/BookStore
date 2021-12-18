@@ -4,20 +4,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class BookOrder {
-    private String address;
+    private int orderID;
     private String shippingAddress;
     private String paymentInfo;
     private int trackingNumber;
 
-    public BookOrder (String address, String paymentInfo) {
-        this.address = address;
+    public BookOrder (String paymentInfo, String shippingAddress, Connection conn) {
         this.paymentInfo = paymentInfo;
+        this.shippingAddress = shippingAddress;
+        this.orderID = getRows(conn);
+        this.trackingNumber = getRows(conn);
     }
 
     public void makeOrder(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO Book VALUES('" + this.address + "','" + this.paymentInfo + "','" + getRows(conn) + "')");
+            stmt.executeUpdate("INSERT INTO BookOrder VALUES('" + this.orderID + "','" + this.shippingAddress + "','" + this.paymentInfo + "','" + getRows(conn) + "')");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

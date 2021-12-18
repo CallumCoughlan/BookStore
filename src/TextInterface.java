@@ -49,6 +49,16 @@ public class TextInterface {
                 "\n\"Exit\": Ends Program");
     }
 
+    public void viewSalesText() {
+        System.out.println("Type how you would like to search for sales:" +
+                "\n\"AllSales\": Display all money made from all sales" +
+                "\n\"SalesPerGenre\": Display all money made from a single genre" +
+                "\n\"SalesPerBook\": Display all money made by a single book" +
+                "\n\"SalesPerAuthor\": Display all money made from books by a given author" +
+                "\n\"SalesPerPublisher\": Display all money made from books by a given publisher" +
+                "\n\"Exit\": Ends Program");
+    }
+
     public void invalidCommand() {
         System.out.println("The entered command is not valid");
     }
@@ -156,7 +166,7 @@ public class TextInterface {
     }
 
     public void displayBooksByAuthorTable(Connection conn, String author) {
-        String sql = ("SELECT * FROM Book WHERE authorID = ?");
+        String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Author WHERE author = ? UNION SELECT * FROM Book");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, author);
             String newSql = pstmt.toString();
@@ -167,7 +177,7 @@ public class TextInterface {
     }
 
     public void displayBooksByISBNTable(Connection conn, String isbn) {
-        String sql = ("SELECT * FROM Book WHERE isbn = ?");
+        String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book WHERE isbn = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, isbn);
             String newSql = pstmt.toString();
@@ -178,7 +188,7 @@ public class TextInterface {
     }
 
     public void displayBooksByGenreTable(Connection conn, String genre) {
-        String sql = ("SELECT * FROM Book WHERE genre = ?");
+        String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book WHERE genre = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, genre);
             String newSql = pstmt.toString();
@@ -188,9 +198,74 @@ public class TextInterface {
         }
     }
 
-    public void displayCart(Connection conn) {
-        String sql = ("SELECT Book.name, Book.author, Book.isbn, Book.stock, Book.price, Book.genre FROM Book INNER JOIN Cart ON Book.isbn = Cart.isbn");
+    public void displayBooksByBookNameTable(Connection conn, String bookName) {
+        String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book WHERE name = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, bookName);
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void displayCart(Connection conn) {
+        String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book INNER JOIN Cart ON Book.isbn = Cart.isbn");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void getAllSales(Connection conn) {
+        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        buildTable(sql, conn);
+    }
+
+    public void getNetProfit(Connection conn) {
+        String sql = ("SELECT SUM((price * amount) - (price * bookRoyalty * 0.01)) as all_sales FROM SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        buildTable(sql, conn);
+    }
+
+    public void getSalesPerGenre(Connection conn, String genre) {
+        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book WHERE genre = ? INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, genre);
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void getSalesPerBook(Connection conn, String isbn) {
+        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book WHERE isbn = ? INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, isbn);
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void getSalesPerAuthor(Connection conn, int authorID) {
+        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book WHERE authorID = ? INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, authorID);
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void getSalesPerPublisher(Connection conn, String email) {
+        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book WHERE email = ? INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
             String newSql = pstmt.toString();
             buildTable(newSql, conn);
         } catch (SQLException e) {
@@ -207,6 +282,23 @@ public class TextInterface {
 
     }
 
+    public void register(Connection conn, Scanner sc) {
+        System.out.println("Enter your full name:");
+        String name = sc.nextLine();
+        System.out.println("Enter your Username:");
+        String username = sc.nextLine();
+        System.out.println("Enter your desired Password:");
+        String password = sc.nextLine();
+        System.out.println("Enter your Address:");
+        String address = sc.nextLine();
+        System.out.println("Enter your Postal code:");
+        String postalCode = sc.nextLine();
+        System.out.println("Enter your Credit Card number:");
+        String paymentInfo = sc.nextLine();
+        Customer newCustomer = new Customer(name, username, password, address, postalCode, paymentInfo);
+        newCustomer.addCustomer(conn);
+    }
+
     public void buildTable(String sql, Connection conn) {
         try {
             Statement st = conn.createStatement();
@@ -215,12 +307,14 @@ public class TextInterface {
 
             int columnsNumber = metaData.getColumnCount();
 
+            System.out.println("================================================");
             while (result.next()) {
-                for(int i = 1 ; i <= columnsNumber; i++){
-                    System.out.print(result.getString(i) + " ");
+                for(int i = 1 ; i < columnsNumber; i++) {
+                    System.out.print(metaData.getColumnName(i) + ": " + result.getString(i) + ", ");
                 }
-                System.out.println();
+                System.out.println(metaData.getColumnName(columnsNumber) + ": " + result.getString(columnsNumber));
             }
+            System.out.println("================================================");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
