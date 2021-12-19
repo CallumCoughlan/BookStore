@@ -2,7 +2,6 @@ import java.sql.*;
 
 public class Collection {
     private String collectionName;
-    private String isbn;
     private String username;
 
     public Collection(String collectionName, String username) {

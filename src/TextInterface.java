@@ -169,7 +169,7 @@ public class TextInterface {
     }
 
     public void displayBooksByAuthorTable(Connection conn, String author) {
-        String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Author WHERE author = ? UNION SELECT * FROM Book");
+        String sql = ("SELECT * FROM Author INNER JOIN Book ON Author.authorid = Book.authorid WHERE Author.name = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, author);
             String newSql = pstmt.toString();

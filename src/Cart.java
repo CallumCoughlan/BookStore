@@ -2,7 +2,6 @@ import java.sql.*;
 
 public class Cart {
     public int cartID;
-    private String isbn;
 
     public Cart(String username, Connection conn) {
         try {
