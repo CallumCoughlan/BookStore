@@ -38,6 +38,7 @@ public class TextInterface {
                 "\n\"AddBook\": Add book to cart" +
                 "\n\"RemoveBook\": Remove book from cart" +
                 "\n\"DisplayCart\": Shows all items in cart" +
+                "\n\"DisplayAllOrders\": Shows all Orders" +
                 "\n\"Checkout\": Creates order" +
                 "\n\"Exit\": Ends Program");
     }

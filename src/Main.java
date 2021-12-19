@@ -97,11 +97,6 @@ public class Main {
                 } else if (mainCommand.equalsIgnoreCase("DisplayAllOrders")) {
                     ti.getAllOrders(conn);
 
-                } else if (mainCommand.equalsIgnoreCase("DisplayAnOrdersInfo")) {
-                    System.out.println("Enter your order number");
-                    int number = sc.nextInt();
-                    ti.getOrder(number);
-
                 } else if (!mainCommand.equalsIgnoreCase("Exit")) {
                     ti.invalidCommand();
                 }
