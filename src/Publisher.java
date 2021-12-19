@@ -10,6 +10,13 @@ public class Publisher {
     private String bankAccount;
     private String email;
 
+    /**The constructor for Publisher with parameters
+     * @param name The name of the publisher
+     * @param address The address of the publisher
+     * @param phoneNumber The publishers phone number
+     * @param bankAccount The publishers bank account number
+     * @param email The publishers email
+     */
     public Publisher(String name, String address, String phoneNumber, String bankAccount, String email) {
         this.name = name;
         this.address = address;
@@ -18,6 +25,9 @@ public class Publisher {
         this.email = email;
     }
 
+    /**This method adds a publisher to the Publisher table
+     * @param conn The connection to the database
+     */
     public void addPublisher(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
@@ -27,6 +37,9 @@ public class Publisher {
         }
     }
 
+    /**This method removes a publisher from the Publisher table
+     * @param conn The connection to the database
+     */
     public void removePublisher(Connection conn) {
         String sql = ("DELETE FROM Publisher WHERE email = ?");
 
@@ -38,6 +51,8 @@ public class Publisher {
         }
     }
 
+    /**This method gets the email of an instance of publisher
+     */
     public String getEmail() {
         return email;
     }

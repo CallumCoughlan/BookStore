@@ -3,23 +3,34 @@ import java.util.Scanner;
 
 public class TextInterface {
 
+    /**The constructor of TextInterface
+     */
     public TextInterface() {
 
     }
+
+    /**This method prints the option to login as a customer or employee
+     */
     public void userOption() {
         System.out.println("To login as Customer type \"Customer\", To login as Employee type \"Employee\"");
     }
 
+    /**This method prints the options a customer has before logging in
+     */
     public void customerLogin() {
         System.out.println("Would you like to:" +
                 "\n\"Login\": Allows you to shop" +
                 "\n\"Register\": Lets you register so you can shop");
     }
 
+    /**This method prints a message if the user entered incorrect credentials
+     */
     public void invalidLogin() {
         System.out.println("Would you like to you login detail were invalid");
     }
 
+    /**This method prints the options a customer has upon logging in
+     */
     public void customerMenu() {
         System.out.println("These are the actions you can preform:" +
                 "\n\"DisplayBooks\": Display all books" +
@@ -31,10 +42,14 @@ public class TextInterface {
                 "\n\"Exit\": Ends Program");
     }
 
+    /**This method prints the login message for employees
+     */
     public void employeeLogin() {
         System.out.println("PLease login:");
     }
 
+    /**This method prints the options an employee has upon logging in
+     */
     public void employeeMenu() {
         System.out.println("These are the actions you can preform:" +
                 "\n\"AddBook\": Add book to catalog" +
@@ -51,6 +66,8 @@ public class TextInterface {
                 "\n\"Exit\": Ends Program");
     }
 
+    /**This method prints the options an employee can select to view sales by
+     */
     public void viewSalesText() {
         System.out.println("Type how you would like to search for sales:" +
                 "\n\"AllSales\": Display all money made from all sales" +
@@ -61,10 +78,14 @@ public class TextInterface {
                 "\n\"Exit\": Ends Program");
     }
 
+    /**This method prints an error if the command entered is not one of the listed
+     */
     public void invalidCommand() {
         System.out.println("The entered command is not valid");
     }
 
+    /**This method prints the options a customer has to search for a book by
+     */
     public void searchBookText() {
         System.out.println("Type how you would like to search for books:" +
                 "\n\"BookName\": Display all books with the given name" +
@@ -75,6 +96,10 @@ public class TextInterface {
                 "\n\"Exit\": Ends Program");
     }
 
+    /**This method gets the inputs from an employee and adds a book to the store
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     */
     public void addBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the book's name");
         String bookName = sc.nextLine();
@@ -103,6 +128,10 @@ public class TextInterface {
         System.out.println(bookName + " has been added to store!");
     }
 
+    /**This method gets the inputs from an employee and removes a book to the store
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     */
     public void removeBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the ISBN of the book");
         Book oldBook = new Book(0, "", 0, 0, 0, sc.nextLine(), "", 0, 0, "", 0);
@@ -110,6 +139,10 @@ public class TextInterface {
         System.out.println("The book has been removed");
     }
 
+    /**This method gets the inputs from an employee and adds a publisher to the store database
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     */
     public void addPublisherText(Connection conn, Scanner sc) {
         System.out.println("Enter the publisher's name");
         String publisherName = sc.nextLine();
@@ -126,6 +159,10 @@ public class TextInterface {
         newPublisher.addPublisher(conn);
     }
 
+    /**This method gets the inputs from an employee and removes a publisher from the store database
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     */
     public void removePublisherText(Connection conn, Scanner sc) {
         System.out.println("Enter the email of the publisher");
         Publisher oldPublisher = new Publisher("", "", "", "", sc.nextLine());
@@ -133,6 +170,10 @@ public class TextInterface {
         System.out.println("The book has been removed");
     }
 
+    /**This method gets the inputs from an employee and adds an author to the store database
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     */
     public void addAuthorText(Connection conn, Scanner sc) {
         System.out.println("Enter the author's name");
         String authorName = sc.nextLine();
@@ -142,6 +183,10 @@ public class TextInterface {
         newAuthor.addAuthor(conn);
     }
 
+    /**This method gets the inputs from an employee and removes an author from the store database
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     */
     public void removeAuthorText(Connection conn, Scanner sc) {
         System.out.println("Enter the author's ID");
         int authorID = sc.nextInt();
@@ -149,16 +194,26 @@ public class TextInterface {
         oldAuthor.removeAuthor(conn);
     }
 
+    /**This method displays all books in the store
+     * @param conn the connection to the database
+     */
     public void displayBooksTable(Connection conn) {
         String sql = ("SELECT * FROM Book");
         buildTable(sql, conn);
     }
 
+    /**This method displays all books with a stock below or equal to 5
+     * @param conn the connection to the database
+     */
     public void displayCriticalStock(Connection conn) {
         String sql = ("SELECT name, stock FROM Book WHERE stock <= 5");
         buildTable(sql, conn);
     }
 
+    /**This method add a value to the stock of a book to restock
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     */
     public void restockText(Connection conn, Scanner sc) {
         System.out.println("Enter book ISBN");
         String isbn = sc.nextLine();
@@ -168,6 +223,10 @@ public class TextInterface {
         oldBook.restock(conn, amount);
     }
 
+    /**This method displays all books by a certain author
+     * @param conn the connection to the database
+     * @param author the author to search for books by
+     */
     public void displayBooksByAuthorTable(Connection conn, String author) {
         String sql = ("SELECT * FROM Author INNER JOIN Book ON Author.authorid = Book.authorid WHERE Author.name = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -179,6 +238,10 @@ public class TextInterface {
         }
     }
 
+    /**This method displays the book with a given isbn
+     * @param conn the connection to the database
+     * @param isbn the isbn of a book to find
+     */
     public void displayBooksByISBNTable(Connection conn, String isbn) {
         String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book WHERE isbn = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -190,6 +253,10 @@ public class TextInterface {
         }
     }
 
+    /**This method displays all books with a certain genre associated with them
+     * @param conn the connection to the database
+     * @param genre the genre of books to search for
+     */
     public void displayBooksByGenreTable(Connection conn, String genre) {
         String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book WHERE genre = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -201,6 +268,10 @@ public class TextInterface {
         }
     }
 
+    /**This method displays all books with a given name
+     * @param conn the connection to the database
+     * @param bookName the name of the book to search fo
+     */
     public void displayBooksByBookNameTable(Connection conn, String bookName) {
         String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book WHERE name = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -212,6 +283,10 @@ public class TextInterface {
         }
     }
 
+    /**This method displays all books in a certain collection
+     * @param conn the connection to the database
+     * @param collection the collection of books to search for
+     */
     public void displayBooksByCollectionTable(Connection conn, String collection) {
         String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book INNER JOIN Collection ON book.isbn = collection.isbn WHERE collection.collectionname = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -223,6 +298,11 @@ public class TextInterface {
         }
     }
 
+    /**This method gets the inputs from an employee and adds a collection to the store database
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     * @param username the username of the employee creating the collection
+     */
     public void createCollection(Connection conn, Scanner sc, String username) {
         System.out.println("Enter the name of the new collection");
         String collectionName = sc.nextLine();
@@ -232,6 +312,10 @@ public class TextInterface {
         collection.createCollection(isbn, conn);
     }
 
+    /**This method gets the inputs from an employee and adds a book to a collection
+     * @param conn the connection to the database
+     * @param sc the scanner getting user input
+     */
     public void addToCollection(Connection conn, Scanner sc) {
         System.out.println("Enter the name of the collection to add to");
         String collectionName = sc.nextLine();
@@ -241,6 +325,9 @@ public class TextInterface {
         collection.addToCollection(isbn, conn);
     }
 
+    /**This method displays all books in the customers cart
+     * @param conn the connection to the database
+     */
     public void displayCart(Connection conn) {
         String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book INNER JOIN Cart ON Book.isbn = Cart.isbn");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -251,16 +338,26 @@ public class TextInterface {
         }
     }
 
+    /**This method displays all sales made by the store
+     * @param conn the connection to the database
+     */
     public void getAllSales(Connection conn) {
         String sql = ("SELECT SUM(price * amount) as all_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn) AS book_order");
         buildTable(sql, conn);
     }
 
+    /**This method displays the net profit after the publishers are paid
+     * @param conn the connection to the database
+     */
     public void getNetProfit(Connection conn) {
         String sql = ("SELECT SUM((price * amount) - (price * bookRoyalty * 0.01)) as net_profit FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn) AS book_order");
         buildTable(sql, conn);
     }
 
+    /**This method displays the sales made by a specific genre
+     * @param genre the genre of book being searched for
+     * @param conn the connection to the database
+     */
     public void getSalesPerGenre(Connection conn, String genre) {
         String sql = ("SELECT SUM(price * amount) AS genre_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn WHERE Book.genre = ?) AS book_order");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -272,6 +369,10 @@ public class TextInterface {
         }
     }
 
+    /**This method displays the sales made by a specific book
+     * @param isbn the isbn of the book
+     * @param conn the connection to the database
+     */
     public void getSalesPerBook(Connection conn, String isbn) {
         String sql = ("SELECT SUM(price * amount) AS book_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn WHERE OrderItem.isbn = ?) AS book_orders");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -283,6 +384,10 @@ public class TextInterface {
         }
     }
 
+    /**This method displays the sales made by an author
+     * @param authorID the id of the author
+     * @param conn the connection to the database
+     */
     public void getSalesPerAuthor(Connection conn, int authorID) {
         String sql = ("SELECT SUM(price * amount) as author_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn WHERE authorID = ?) AS book_order");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -294,6 +399,10 @@ public class TextInterface {
         }
     }
 
+    /**This method displays the sales made by a publisher
+     * @param email the email of the publisher
+     * @param conn the connection to the database
+     */
     public void getSalesPerPublisher(Connection conn, String email) {
         String sql = ("SELECT SUM(price * amount) as all_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn WHERE email = ?) AS book_order");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -305,15 +414,18 @@ public class TextInterface {
         }
     }
 
+    /**This method displays all the orders from the store
+     * @param conn the connection to the database
+     */
     public void getAllOrders(Connection conn) {
         String sql = ("SELECT * FROM BookOrder");
         buildTable(sql, conn);
     }
 
-    public void getOrder(int number) {
-
-    }
-
+    /**This method gets the inputs from a customer and creates a new customer in the table
+     * @param sc the scanner getting user input
+     * @param conn the connection to the database
+     */
     public void register(Connection conn, Scanner sc) {
         System.out.println("Enter your full name:");
         String name = sc.nextLine();
@@ -331,6 +443,10 @@ public class TextInterface {
         newCustomer.addCustomer(conn);
     }
 
+    /**This method displays a table for any retrieved sql table
+     * @param sql the table gotten by a sql statement
+     * @param conn the connection to the database
+     */
     public void buildTable(String sql, Connection conn) {
         try {
             Statement st = conn.createStatement();

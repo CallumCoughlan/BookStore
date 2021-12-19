@@ -3,6 +3,10 @@ import java.sql.*;
 public class Cart {
     public int cartID;
 
+    /**The constructor for Cart with parameters
+     * @param conn The connection to the database
+     * @param username The username of the customer who is making this cart
+     */
     public Cart(String username, Connection conn) {
         try {
             Statement st = conn.createStatement();
@@ -16,6 +20,12 @@ public class Cart {
         }
     }
 
+    /**This method creates orderitems and bookorders from the items in the cart then removes them from the cart.
+     * it also removes from the books stock and auto restocks if threshold of a book is hit.
+     * @param conn The connection to the database
+     * @param paymentInfo The payment info being used to pay for the books in the cart
+     * @param shippingAddress The address the books are being sent to
+     */
     public void makePurchase(Connection conn, String paymentInfo, String shippingAddress) {
         try (conn) {
             BookOrder bookOrder = new BookOrder(paymentInfo, shippingAddress, conn);
@@ -48,6 +58,11 @@ public class Cart {
         }
     }
 
+    /**This method adds a book to the cart table
+     * @param conn The connection to the database
+     * @param bookISBN The isbn of the book being added
+     * @param amount The amount of that book being added
+     */
     public void addToCart(String bookISBN, Connection conn, int amount) {
         try {
             Statement st = conn.createStatement();
@@ -70,6 +85,10 @@ public class Cart {
         }
     }
 
+    /**This method removes a book from the cart table
+     * @param conn The connection to the database
+     * @param bookISBN The isbn of the book removed added
+     */
     public void removeFromCart(String bookISBN, Connection conn) {
         String sql = ("DELETE FROM Cart WHERE isbn = ?");
 

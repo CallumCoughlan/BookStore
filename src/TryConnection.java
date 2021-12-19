@@ -3,10 +3,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class TryConnection {
+
+    /**The constructor of TryConnection
+     */
     public TryConnection() {
 
     }
 
+    /**This method connects the application to the database
+     */
     public static java.sql.Connection connect() {
         java.sql.Connection conn = null;
         try {

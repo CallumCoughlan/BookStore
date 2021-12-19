@@ -9,6 +9,15 @@ public class Customer {
     String paymentInfo;
     private int cartID;
 
+    /**This is the constructor for Customer with parameters
+     * @param conn The connection to the database
+     * @param customerName The name of the customer
+     * @param userName The customers username
+     * @param password The customers password
+     * @param address The address of the customer
+     * @param paymentInfo The payment information for the customer
+     * @param postalCode The customers postal code
+     */
     public Customer(String customerName, String userName, String password, String address, String postalCode, String paymentInfo, Connection conn) {
         this.customerName = customerName;
         this.userName = userName;
@@ -19,6 +28,9 @@ public class Customer {
         this.cartID = getRows(conn);
     }
 
+    /**This method adds a customer to the customer tavle in the database
+     * @param conn The connection to the database
+     */
     public void addCustomer(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
@@ -28,6 +40,9 @@ public class Customer {
         }
     }
 
+    /**This method checks to see if the customer exists in the customer table when they try to login
+     * @param conn The connection to the database
+     */
     public boolean checkExists(Connection conn) {
         try {
             String sql = ("SELECT * FROM Customer WHERE username = '" + this.userName + "' AND password = '" + this.password + "'");
@@ -41,6 +56,9 @@ public class Customer {
         return false;
     }
 
+    /**This method gets the number of rows in the customer table
+     * @param conn The connection to the database
+     */
     public int getRows(Connection conn) {
         try {
             String sql = ("SELECT * FROM Customer");
