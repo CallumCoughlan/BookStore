@@ -1,18 +1,71 @@
 import java.sql.*;
-import java.util.ArrayList;
 
 public class Cart {
     public int cartID;
     private String isbn;
 
-    public Cart() {
-
+    public Cart(String username, Connection conn) {
+        try {
+            Statement st = conn.createStatement();
+            PreparedStatement getCartID = conn.prepareStatement("SELECT cartID FROM Customer WHERE username = ?");
+            getCartID.setString(1, username);
+            ResultSet result = st.executeQuery(getCartID.toString());
+            result.next();
+            this.cartID = result.getInt(1);
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    public void addToCart(String bookISBN, Connection conn) {
+    public void makePurchase(Connection conn, String paymentInfo, String shippingAddress) {
+        try (conn) {
+            BookOrder bookOrder = new BookOrder(paymentInfo, shippingAddress, conn);
+            Statement st = conn.createStatement();
+            PreparedStatement getAllItems = conn.prepareStatement("SELECT * FROM Cart WHERE cartID = ?");
+            getAllItems.setInt(1, this.cartID);
+            ResultSet result = st.executeQuery(getAllItems.toString());
+
+            while (result.next()) {
+                OrderItem orderItem = new OrderItem(result.getString(2), bookOrder.getOrderID());
+                orderItem.setAmount(result.getInt(3));
+                orderItem.CreateItem(conn);
+                PreparedStatement decreaseStock = conn.prepareStatement("UPDATE Book SET stock = stock - ? WHERE isbn = ?");
+                decreaseStock.setInt(1, result.getInt(3));
+                decreaseStock.setString(2, result.getString(2));
+            }
+
+            PreparedStatement deleteOrderedItems = conn.prepareStatement("DELETE FROM Cart WHERE cartID = ?");
+            deleteOrderedItems.setInt(1, this.cartID);
+            deleteOrderedItems.executeUpdate();
+
+            //make order
+            bookOrder.makeOrder(conn);
+
+            //see if books have hit the threshold and restock
+            st.executeUpdate("UPDATE Book SET stock = startingstock WHERE stock <= threshold");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addToCart(String bookISBN, Connection conn, int amount) {
         try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO Cart values('" + bookISBN + "','" + getRows(conn) + "')");
+            Statement st = conn.createStatement();
+            PreparedStatement pstmt = conn.prepareStatement("SELECT DISTINCT isbn FROM Cart WHERE cartID = ? AND isbn = ?");
+            pstmt.setInt(1, this.cartID);
+            pstmt.setString(2, bookISBN);
+            ResultSet result = st.executeQuery(pstmt.toString());
+
+            if (result.next()) {
+                PreparedStatement addToExistingCart = conn.prepareStatement("UPDATE Cart SET amount = amount + ? WHERE isbn = ? AND cartID = ?");
+                addToExistingCart.setInt(1, amount);
+                addToExistingCart.setString(2, bookISBN);
+                addToExistingCart.setInt(1, this.cartID);
+                addToExistingCart.executeUpdate();
+            } else {
+                st.executeUpdate("INSERT INTO Cart values('" + this.cartID + "','" + bookISBN + "','" + amount + "')");
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -27,36 +80,5 @@ public class Cart {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    public void clearCart(Connection conn) {
-        try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("DELETE FROM Cart");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public int getRows(Connection conn) {
-        try {
-            String sql = ("SELECT * FROM Cart");
-            Statement st = conn.createStatement();
-            ResultSet result = st.executeQuery(sql);
-            int rows = 1;
-
-            while (!result.next()) {
-                rows += 1;
-            }
-            return rows;
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return 1;
-    }
-
-    public int generateCartID(Connection conn) {
-        String sql = ("SELECT * FROM Cart");
-        return 0;
     }
 }

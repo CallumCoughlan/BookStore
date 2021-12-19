@@ -43,6 +43,8 @@ public class TextInterface {
                 "\n\"RemovePublisher\": Remove publisher from database" +
                 "\n\"AddAuthor\": Add author to database" +
                 "\n\"RemoveAuthor\": Remove author from database" +
+                "\n\"CreateCollection\": Creates a book collection" +
+                "\n\"AddToCollection\": adds a book to a book collection" +
                 "\n\"CriticalStock\": Shows books where the warehouse has less than 5 copies of them" +
                 "\n\"Restock\": Restocks a book by a specified amount" +
                 "\n\"ViewSales\": Shows options as to how to view the total store sales" +
@@ -67,14 +69,15 @@ public class TextInterface {
         System.out.println("Type how you would like to search for books:" +
                 "\n\"BookName\": Display all books with the given name" +
                 "\n\"AuthorName\": Display all books by given author" +
-                "\n\"ISBN\": Display the book" +
-                "\n\"Genre\": Remove book from cart" +
+                "\n\"ISBN\": Display the book with this isbn" +
+                "\n\"Genre\": Display all books in genre" +
+                "\n\"Collection\": Display all books in collection" +
                 "\n\"Exit\": Ends Program");
     }
 
     public void addBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the book's name");
-        String bookName = sc.next();
+        String bookName = sc.nextLine();
         System.out.println("Enter the Author's ID");
         int authorID = sc.nextInt();
         System.out.println("Enter the number of pages");
@@ -84,17 +87,17 @@ public class TextInterface {
         System.out.println("Enter the price(Integer) of the book");
         int price = sc.nextInt();
         System.out.println("Enter the ISBN of the book");
-        String isbn = sc.next();
+        String isbn = sc.nextLine();
         System.out.println("Enter the Genre of the book");
-        String genre = sc.next();
+        String genre = sc.nextLine();
         System.out.println("Enter the number of remaining books to restock at");
         int threshold = sc.nextInt();
         System.out.println("Enter the royalty the publisher gets");
         int bookRoyalty = sc.nextInt();
         System.out.println("Enter the email of the publisher");
-        String email = sc.next();
+        String email = sc.nextLine();
 
-        Book newBook = new Book(authorID, bookName, numberOfPages, stock, price, isbn, genre, threshold, bookRoyalty, email);
+        Book newBook = new Book(authorID, bookName, numberOfPages, stock, price, isbn, genre, threshold, bookRoyalty, email, stock);
         newBook.addBook(conn);
 
         System.out.println(bookName + " has been added to store!");
@@ -102,22 +105,22 @@ public class TextInterface {
 
     public void removeBookText(Connection conn, Scanner sc) {
         System.out.println("Enter the ISBN of the book");
-        Book oldBook = new Book(0, "", 0, 0, 0, sc.next(), "", 0, 0, "");
+        Book oldBook = new Book(0, "", 0, 0, 0, sc.nextLine(), "", 0, 0, "", 0);
         oldBook.removeBook(conn);
         System.out.println("The book has been removed");
     }
 
     public void addPublisherText(Connection conn, Scanner sc) {
         System.out.println("Enter the publisher's name");
-        String publisherName = sc.next();
+        String publisherName = sc.nextLine();
         System.out.println("Enter the address of the publisher");
-        String publisherAddress = sc.next();
+        String publisherAddress = sc.nextLine();
         System.out.println("Enter the phone number of the publisher");
-        String phoneNumber = sc.next();
+        String phoneNumber = sc.nextLine();
         System.out.println("Enter the bank account number of the publisher");
-        String bankAccount = sc.next();
+        String bankAccount = sc.nextLine();
         System.out.println("Enter email of the publisher");
-        String email = sc.next();
+        String email = sc.nextLine();
 
         Publisher newPublisher = new Publisher(publisherName, publisherAddress, phoneNumber, bankAccount, email);
         newPublisher.addPublisher(conn);
@@ -125,23 +128,23 @@ public class TextInterface {
 
     public void removePublisherText(Connection conn, Scanner sc) {
         System.out.println("Enter the email of the publisher");
-        Publisher oldPublisher = new Publisher("", "", "", "", sc.next());
+        Publisher oldPublisher = new Publisher("", "", "", "", sc.nextLine());
         oldPublisher.removePublisher(conn);
         System.out.println("The book has been removed");
     }
 
     public void addAuthorText(Connection conn, Scanner sc) {
         System.out.println("Enter the author's name");
-        String authorName = sc.next();
+        String authorName = sc.nextLine();
         System.out.println("Enter the author's ID");
-        String authorID = sc.next();
+        int authorID = sc.nextInt();
         Author newAuthor = new Author(authorName, authorID);
         newAuthor.addAuthor(conn);
     }
 
     public void removeAuthorText(Connection conn, Scanner sc) {
         System.out.println("Enter the author's ID");
-        String authorID = sc.next();
+        int authorID = sc.nextInt();
         Author oldAuthor = new Author("", authorID);
         oldAuthor.removeAuthor(conn);
     }
@@ -152,16 +155,16 @@ public class TextInterface {
     }
 
     public void displayCriticalStock(Connection conn) {
-        String sql = ("SELECT name AND stock FROM Book WHERE stock <= 5");
+        String sql = ("SELECT name, stock FROM Book WHERE stock <= 5");
         buildTable(sql, conn);
     }
 
     public void restockText(Connection conn, Scanner sc) {
         System.out.println("Enter book ISBN");
-        String isbn = sc.next();
+        String isbn = sc.nextLine();
         System.out.println("Enter amount to buy");
         int amount = sc.nextInt();
-        Book oldBook = new Book(0, "", 0, 0, 0, isbn, "", 0, 0, "");
+        Book oldBook = new Book(0, "", 0, 0, 0, isbn, "", 0, 0, "", 0);
         oldBook.restock(conn, amount);
     }
 
@@ -209,6 +212,35 @@ public class TextInterface {
         }
     }
 
+    public void displayBooksByCollectionTable(Connection conn, String collection) {
+        String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book INNER JOIN Collection ON book.isbn = collection.isbn WHERE collection.collectionname = ?");
+        try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, collection);
+            String newSql = pstmt.toString();
+            buildTable(newSql, conn);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void createCollection(Connection conn, Scanner sc, String username) {
+        System.out.println("Enter the name of the new collection");
+        String collectionName = sc.nextLine();
+        System.out.println("Enter the isbn of the first book to add to the collection");
+        String isbn = sc.nextLine();
+        Collection collection = new Collection(collectionName, username);
+        collection.createCollection(isbn, conn);
+    }
+
+    public void addToCollection(Connection conn, Scanner sc) {
+        System.out.println("Enter the name of the collection to add to");
+        String collectionName = sc.nextLine();
+        System.out.println("Enter the isbn of the book to add to the collection");
+        String isbn = sc.nextLine();
+        Collection collection = new Collection(collectionName, "");
+        collection.addToCollection(isbn, conn);
+    }
+
     public void displayCart(Connection conn) {
         String sql = ("SELECT Book.name, Book.authorID, Book.isbn, Book.stock, Book.price, Book.genre FROM Book INNER JOIN Cart ON Book.isbn = Cart.isbn");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -220,50 +252,50 @@ public class TextInterface {
     }
 
     public void getAllSales(Connection conn) {
-        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        String sql = ("SELECT SUM(price * amount) as all_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn)");
         buildTable(sql, conn);
     }
 
     public void getNetProfit(Connection conn) {
-        String sql = ("SELECT SUM((price * amount) - (price * bookRoyalty * 0.01)) as all_sales FROM SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        String sql = ("SELECT SUM((price * amount) - (price * bookRoyalty * 0.01)) as net_profit FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn) AS book_order");
         buildTable(sql, conn);
     }
 
     public void getSalesPerGenre(Connection conn, String genre) {
-        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book WHERE genre = ? INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        String sql = ("SELECT SUM(price * amount) AS genre_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn WHERE Book.genre = ?) AS book_order");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, genre);
             String newSql = pstmt.toString();
             buildTable(newSql, conn);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void getSalesPerBook(Connection conn, String isbn) {
-        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book WHERE isbn = ? INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        String sql = ("SELECT SUM(price * amount) AS book_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn WHERE OrderItem.isbn = ?) AS book_orders");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, isbn);
             String newSql = pstmt.toString();
             buildTable(newSql, conn);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void getSalesPerAuthor(Connection conn, int authorID) {
-        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book WHERE authorID = ? INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        String sql = ("SELECT SUM(price * amount) as author_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn WHERE authorID = ?) AS book_order");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, authorID);
             String newSql = pstmt.toString();
             buildTable(newSql, conn);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void getSalesPerPublisher(Connection conn, String email) {
-        String sql = ("SELECT SUM(price * amount) as all_sales FROM SELECT * FROM Book WHERE email = ? INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn");
+        String sql = ("SELECT SUM(price * amount) as all_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn WHERE email = ?) AS book_order");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
             String newSql = pstmt.toString();
@@ -295,7 +327,7 @@ public class TextInterface {
         String postalCode = sc.nextLine();
         System.out.println("Enter your Credit Card number:");
         String paymentInfo = sc.nextLine();
-        Customer newCustomer = new Customer(name, username, password, address, postalCode, paymentInfo);
+        Customer newCustomer = new Customer(name, username, password, address, postalCode, paymentInfo, conn);
         newCustomer.addCustomer(conn);
     }
 

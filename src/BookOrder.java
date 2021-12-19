@@ -9,6 +9,10 @@ public class BookOrder {
     private String paymentInfo;
     private int trackingNumber;
 
+    public int getOrderID() {
+        return orderID;
+    }
+
     public BookOrder (String paymentInfo, String shippingAddress, Connection conn) {
         this.paymentInfo = paymentInfo;
         this.shippingAddress = shippingAddress;
@@ -19,7 +23,7 @@ public class BookOrder {
     public void makeOrder(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO BookOrder VALUES('" + this.orderID + "','" + this.shippingAddress + "','" + this.paymentInfo + "','" + getRows(conn) + "')");
+            stmt.executeUpdate("INSERT INTO BookOrder VALUES('" + this.orderID + "','" + this.shippingAddress + "','" + this.paymentInfo + "','" + this.trackingNumber + "')");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -32,7 +36,7 @@ public class BookOrder {
             ResultSet result = st.executeQuery(sql);
             int rows = 1;
 
-            while (!result.next()) {
+            while (result.next()) {
                 rows += 1;
             }
             return rows;

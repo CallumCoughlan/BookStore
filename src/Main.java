@@ -9,6 +9,7 @@ public class Main {
         String userOption = "";
         String mainCommand = "";
         String subCommand = "";
+        String username = "";
         boolean userExists = false;
 
         while (!userOption.equalsIgnoreCase("Customer") && !userOption.equalsIgnoreCase("Employee")) {
@@ -23,10 +24,10 @@ public class Main {
                     mainCommand = sc.nextLine();
                     if (mainCommand.equalsIgnoreCase("Login")) {
                         System.out.println("Enter your Username:");
-                        String username = sc.next();
+                        username = sc.nextLine();
                         System.out.println("Enter your Password");
-                        String password = sc.next();
-                        Customer currentCustomer = new Customer("", username, password, "", "", "");
+                        String password = sc.nextLine();
+                        Customer currentCustomer = new Customer("", username, password, "", "", "", conn);
                         if (currentCustomer.checkExists(conn)) {
                             userExists = true;
                         }
@@ -38,41 +39,47 @@ public class Main {
                     }
                 }
                 ti.customerMenu();
-                mainCommand = sc.next();
+                mainCommand = sc.nextLine();
 
                 if (mainCommand.equalsIgnoreCase("DisplayBooks")) {
                     ti.displayBooksTable(conn);
                 } else if (mainCommand.equalsIgnoreCase("SearchBooks")) {
                     ti.searchBookText();
-                    subCommand = sc.next();
+                    subCommand = sc.nextLine();
                     if(subCommand.equalsIgnoreCase("BookName")) {
                         System.out.println("Enter the name of a Book");
-                        String bookName = sc.next();
+                        String bookName = sc.nextLine();
                         ti.displayBooksByBookNameTable(conn, bookName);
                     } else if (subCommand.equalsIgnoreCase("AuthorName")) {
                         System.out.println("Enter the name of an author");
-                        String author = sc.next();
+                        String author = sc.nextLine();
                         ti.displayBooksByAuthorTable(conn, author);
                     } else if (subCommand.equalsIgnoreCase("ISBN")) {
                         System.out.println("Enter the book's ISBN");
-                        String isbn = sc.next();
+                        String isbn = sc.nextLine();
                         ti.displayBooksByISBNTable(conn, isbn);
                     } else if (subCommand.equalsIgnoreCase("Genre")) {
                         System.out.println("Enter the Genre of books");
-                        String genre = sc.next();
+                        String genre = sc.nextLine();
                         ti.displayBooksByGenreTable(conn, genre);
+                    } else if (subCommand.equalsIgnoreCase("Collection")) {
+                        System.out.println("Enter the Collection of books");
+                        String collection = sc.nextLine();
+                        ti.displayBooksByCollectionTable(conn, collection);
                     }
                 } else if (mainCommand.equalsIgnoreCase("AddBook")) {
                     System.out.println("Enter the ISBN of the book you would like to add to cart");
-                    String isbn = sc.next();
-                    Cart cart = new Cart();
-                    cart.addToCart(isbn, conn);
+                    String isbn = sc.nextLine();
+                    System.out.println("Enter the amount of that book");
+                    int amount = sc.nextInt();
+                    Cart cart = new Cart(username, conn);
+                    cart.addToCart(isbn, conn, amount);
                     System.out.println("The book has been added to cart");
 
                 } else if (mainCommand.equalsIgnoreCase("RemoveBook")) {
                     System.out.println("Enter the ISBN of the book you would like to remove from cart");
-                    String isbn = sc.next();
-                    Cart cart = new Cart();
+                    String isbn = sc.nextLine();
+                    Cart cart = new Cart(username, conn);
                     cart.removeFromCart(isbn, conn);
                     System.out.println("The book has been removed from the cart");
 
@@ -80,11 +87,11 @@ public class Main {
                     ti.displayCart(conn);
                 } else if (mainCommand.equalsIgnoreCase("Checkout")) {
                     System.out.println("Enter your credit card number");
-                    String paymentInfo = sc.next();
+                    String paymentInfo = sc.nextLine();
                     System.out.println("Enter the desired shipping address");
-                    String address = sc.next();
-                    BookOrder newOrder = new BookOrder(address, paymentInfo, conn);
-                    newOrder.makeOrder(conn);
+                    String shippingAddress = sc.nextLine();
+                    Cart cart = new Cart(username, conn);
+                    cart.makePurchase(conn, paymentInfo, shippingAddress);
                     System.out.println("Your order has been placed");
 
                 } else if (mainCommand.equalsIgnoreCase("DisplayAllOrders")) {
@@ -102,9 +109,9 @@ public class Main {
                 while (!userExists) {
                     ti.employeeLogin();
                     System.out.println("Enter your Username:");
-                    String username = sc.next();
+                    username = sc.nextLine();
                     System.out.println("Enter your Password");
-                    String password = sc.next();
+                    String password = sc.nextLine();
                     Employee currentEmployee = new Employee(username, password);
                     if (currentEmployee.checkExists(conn)) {
                         userExists = true;
@@ -112,44 +119,46 @@ public class Main {
                 }
 
                 ti.employeeMenu();
-                mainCommand = sc.next();
+                mainCommand = sc.nextLine();
                 if (mainCommand.equalsIgnoreCase("AddBook")) {
                     ti.addBookText(conn, sc);
-                } else if (mainCommand.equalsIgnoreCase("RemoveBooks")) {
+                } else if (mainCommand.equalsIgnoreCase("RemoveBook")) {
                     ti.removeBookText(conn, sc);
                 } else if (mainCommand.equalsIgnoreCase("AddPublisher")) {
                     ti.addPublisherText(conn, sc);
-                } else if (mainCommand.equalsIgnoreCase("RemoverPublisher")) {
+                } else if (mainCommand.equalsIgnoreCase("RemovePublisher")) {
                     ti.removePublisherText(conn, sc);
                 } else if (mainCommand.equalsIgnoreCase("AddAuthor")) {
                     ti.addAuthorText(conn, sc);
                 } else if (mainCommand.equalsIgnoreCase("RemoveAuthor")) {
                     ti.removeAuthorText(conn, sc);
                 } else if (mainCommand.equalsIgnoreCase("AddToCollection")) {
-                    ti.removeAuthorText(conn, sc);
+                    ti.addToCollection(conn, sc);
+                } else if (mainCommand.equalsIgnoreCase("CreateCollection")) {
+                    ti.createCollection(conn, sc, username);
                 } else if (mainCommand.equalsIgnoreCase("CriticalStock")) {
                     ti.displayCriticalStock(conn);
                 } else if (mainCommand.equalsIgnoreCase("Restock")) {
                     ti.restockText(conn, sc);
                 } else if (mainCommand.equalsIgnoreCase("ViewSales")) {
                     ti.viewSalesText();
-                    subCommand = sc.next();
+                    subCommand = sc.nextLine();
                     if (subCommand.equalsIgnoreCase("AllSales")) {
                         ti.getAllSales(conn);
                     } else if (subCommand.equalsIgnoreCase("NetProfit")) {
                         ti.getNetProfit(conn);
                     } else if (subCommand.equalsIgnoreCase("SalesPerGenre")) {
                         System.out.println("Please enter the name of a genre");
-                        ti.getSalesPerGenre(conn, sc.next());
+                        ti.getSalesPerGenre(conn, sc.nextLine());
                     } else if (subCommand.equalsIgnoreCase("SalesPerBook")) {
                         System.out.println("Please enter the isbn of a book");
-                        ti.getSalesPerBook(conn, sc.next());
+                        ti.getSalesPerBook(conn, sc.nextLine());
                     } else if (subCommand.equalsIgnoreCase("SalesPerAuthor")) {
                         System.out.println("Please enter the authorID of an Author");
                         ti.getSalesPerAuthor(conn, sc.nextInt());
                     } else if (subCommand.equalsIgnoreCase("SalesPerPublisher")) {
                         System.out.println("Please enter the email of a Publisher");
-                        ti.getSalesPerPublisher(conn, sc.next());
+                        ti.getSalesPerPublisher(conn, sc.nextLine());
                     } else if (!mainCommand.equalsIgnoreCase("Exit")) {
                         ti.invalidCommand();
                     }

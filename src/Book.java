@@ -11,9 +11,10 @@ public class Book {
     private int bookRoyalty;
     private String genre;
     private String email;
+    private int startingStock;
     private int cartID;
 
-    public Book(int authorID, String name, int numberOfPages, int stock, int price, String isbn, String genre, int threshold, int bookRoyalty, String email) {
+    public Book(int authorID, String name, int numberOfPages, int stock, int price, String isbn, String genre, int threshold, int bookRoyalty, String email, int startingStock) {
         this.authorID = authorID;
         this.name = name;
         this.isbn = isbn;
@@ -24,6 +25,7 @@ public class Book {
         this.threshold = threshold;
         this.bookRoyalty = bookRoyalty;
         this.email = email;
+        this.startingStock = startingStock;
     }
 
     public void addBook(Connection conn) {

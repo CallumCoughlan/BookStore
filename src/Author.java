@@ -5,9 +5,9 @@ import java.sql.Statement;
 
 public class Author {
     private String name;
-    private String authorID;
+    private int authorID;
 
-    public Author(String name, String authorID) {
+    public Author(String name, int authorID) {
         this.name = name;
         this.authorID = authorID;
     }
@@ -24,26 +24,15 @@ public class Author {
     public void removeAuthor(Connection conn) {
         String sql = ("DELETE FROM Author WHERE authorID = ?");
         try (conn; PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, getAuthorID());
+            pstmt.setInt(1, getAuthorID());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAuthorID() {
+    public int getAuthorID() {
         return authorID;
     }
 
-    public void setAuthorID(String authorID) {
-        this.authorID = authorID;
-    }
 }
