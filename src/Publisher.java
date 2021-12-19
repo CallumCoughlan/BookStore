@@ -21,7 +21,7 @@ public class Publisher {
     public void addPublisher(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("insert into Book values('" + this.name + "','" + this.address + "','" + this.phoneNumber + "','" + this.bankAccount + "','" + this.email + "')");
+            stmt.executeUpdate("INSERT INTO Publisher VALUES('" + this.name + "','" + this.address + "','" + this.phoneNumber + "','" + this.bankAccount + "','" + this.email + "')");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

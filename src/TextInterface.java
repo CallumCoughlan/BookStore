@@ -252,7 +252,7 @@ public class TextInterface {
     }
 
     public void getAllSales(Connection conn) {
-        String sql = ("SELECT SUM(price * amount) as all_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn)");
+        String sql = ("SELECT SUM(price * amount) as all_sales FROM (SELECT * FROM Book INNER JOIN OrderItem ON Book.isbn = OrderItem.isbn) AS book_order");
         buildTable(sql, conn);
     }
 

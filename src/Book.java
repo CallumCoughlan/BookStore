@@ -60,42 +60,6 @@ public class Book {
         }
     }
 
-    public int getAuthorID() {
-        return authorID;
-    }
-
-    public void setAuthorID(int authorID) {
-        this.authorID = authorID;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getNumberOfPages() {
-        return numberOfPages;
-    }
-
-    public void setNumberOfPages(int numberOfPages) {
-        this.numberOfPages = numberOfPages;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
     public String getIsbn() {
         return isbn;
     }
